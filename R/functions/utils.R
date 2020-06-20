@@ -2,10 +2,21 @@ TRANSLATIONS <- c(
     # Values
     "Wild" = "Selvagem",
     "Alive" = "Vivo",
-    "Dead" = "Morto"
+    "Dead" = "Morto",
+    "Intercept" = "Intercepto",
+    "day" = "Dia",
+    "Observation" = "Erro",
+    "sd " = "Desvio Padrão ",
+    "autocor " = "Autocorrelação ",
+    "cor " = "Correlação ",
 
     # Columns
-    # Empty
+    "term" = "Parâmetro",
+    "estimate" = "Estimativa",
+    "std.error" = "Erro padrão",
+    "df" = "G.L.",
+    "statistic" = "Estatística",
+    "p.value" = "p-valor"
 )
 
 .fill_empty_with_previous <- function(
@@ -60,4 +71,18 @@ my_translate_values <- function(
     data %>%
         mutate(across(where(is_character), .my_translate_characters)) %>%
         mutate(across(where(is.factor), .my_translate_factors))
+}
+
+# Translate the columns of a data frame to Portuguese. This is used for
+# reporting
+my_translate_columns <- function(
+    data
+) {
+    translated_columns <-
+        data %>%
+        colnames() %>%
+        .my_translate_characters()
+
+    data %>%
+        set_colnames(translated_columns)
 }

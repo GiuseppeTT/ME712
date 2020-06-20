@@ -3,3 +3,7 @@
 
 # drake files
 .drake
+
+# data (non-public)
+data/*
+!data/.gitkeep

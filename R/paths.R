@@ -1,3 +1,4 @@
 paths <- list(
-    # Empty
+    # Data
+    researcher_data = "data/Dados_Consultoria.xlsx"
 )

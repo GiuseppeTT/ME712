@@ -1,3 +1,6 @@
 plan <- drake_plan(
-    # Empty
+    # Data cleaning
+    experiment_data = my_clean_data(
+        file_in(!!paths$researcher_data)
+    ),
 )

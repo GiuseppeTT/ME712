@@ -1,2 +1,5 @@
 # R project files
 .Rproj.user
+
+# drake files
+.drake

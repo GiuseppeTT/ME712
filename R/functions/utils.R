@@ -1,3 +1,13 @@
+TRANSLATIONS <- c(
+    # Values
+    "Wild" = "Selvagem",
+    "Alive" = "Vivo",
+    "Dead" = "Morto"
+
+    # Columns
+    # Empty
+)
+
 .fill_empty_with_previous <- function(
     previous_value,
     current_value
@@ -27,4 +37,27 @@ repair_merged_cell_names <- function(
 ) {
     cell_names %>%
         accumulate(.fill_empty_with_previous)
+}
+
+.my_translate_characters <- function(
+    characters
+) {
+    characters %>%
+        str_replace_all(TRANSLATIONS)
+}
+
+.my_translate_factors <- function(
+    factors
+) {
+    factors %>%
+        fct_relabel(.my_translate_characters)
+}
+
+# Translate the values of a data frame to Portuguese. This is used for reporting
+my_translate_values <- function(
+    data
+) {
+    data %>%
+        mutate(across(where(is_character), .my_translate_characters)) %>%
+        mutate(across(where(is.factor), .my_translate_factors))
 }

@@ -9,6 +9,7 @@ TRANSLATIONS <- c(
     "sd " = "Desvio Padrão ",
     "autocor " = "Autocorrelação ",
     "cor " = "Correlação ",
+    "treatment" = "Tratamento",
 
     # Columns
     "term" = "Parâmetro",

@@ -31,4 +31,27 @@ plan <- drake_plan(
     mixed_linear_model_residuals = my_plot_mixed_linear_model_residuals(
         mixed_linear_model
     ),
+
+    # Simultaneous ANOVAs
+    simultaneous_anovas_data = my_get_simultaneous_anovas_data(
+        experiment_data
+    ),
+    simultaneous_anovas = my_fit_simultaneous_anovas(
+        simultaneous_anovas_data
+    ),
+    simultaneous_anovas_fit_plot = my_plot_simultaneous_anovas_fit(
+        simultaneous_anovas
+    ),
+    F_tests_table = my_tabularize_F_tests(
+        simultaneous_anovas
+    ),
+    pairwise_t_tests_table = my_tabularize_pairwise_t_tests(
+        simultaneous_anovas
+    ),
+    shapiro_tests_table = my_tabularize_shapiro_tests(
+        simultaneous_anovas
+    ),
+    levene_tests_table = my_tabularize_levene_tests(
+        simultaneous_anovas
+    ),
 )

@@ -17,7 +17,8 @@ TRANSLATIONS <- c(
     "std.error" = "Erro padrão",
     "df" = "G.L.",
     "statistic" = "Estatística",
-    "p.value" = "p-valor"
+    "p.value" = "p-valor",
+    "pair" = "Par"
 )
 
 .fill_empty_with_previous <- function(

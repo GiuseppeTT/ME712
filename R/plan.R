@@ -54,4 +54,18 @@ plan <- drake_plan(
     levene_tests_table = my_tabularize_levene_tests(
         simultaneous_anovas
     ),
+
+    # Survival analysis
+    survival_analysis_data = my_get_survival_analysis_data(
+        experiment_data
+    ),
+    survival_curves_plot = my_plot_survival_curves(
+        survival_analysis_data
+    ),
+    log_rank_table = my_tabularize_log_rank_test(
+        survival_analysis_data
+    ),
+    pairwise_log_rank_tests_table = my_tabularize_pairwise_log_rank_tests(
+        survival_analysis_data
+    ),
 )

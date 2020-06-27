@@ -68,4 +68,15 @@ plan <- drake_plan(
     pairwise_log_rank_tests_table = my_tabularize_pairwise_log_rank_tests(
         survival_analysis_data
     ),
+
+    # Report
+    report = my_generate_report(
+        knitr_in(!!paths$report_source),
+        file_out(!!paths$report_output),
+        parameters = list(
+            preamble_path = file_in(!!paths$report_preamble),
+            title_page_path = file_in(!!paths$report_title_page),
+            bibliography_path = file_in(!!paths$report_bibliography)
+        )
+    ),
 )

@@ -88,3 +88,42 @@ my_translate_columns <- function(
     data %>%
         set_colnames(translated_columns)
 }
+
+# https://stackoverflow.com/questions/49532418/reuse-r-code-with-knitr-in-rnw-sweave-files
+.knit_parametrized <- function(
+    parameters,
+    ...
+) {
+    # Parent enviroment needs to be globalenv, otherwise library() won't work
+    knitr::knit(envir = list2env(parameters, parent = globalenv()), ...)
+}
+
+# Pass parameters to .Rnw as variables through an enviroment. This is done to
+# reproduce the params argument in rmarkdown::render().
+#
+# https://stackoverflow.com/questions/32257970/knitr-inherits-variables-from-a-users-environment-even-with-envir-new-env
+knit_parametrized <- function(
+    ...
+) {
+    # .knit_parametrized needs to be run in another session (callr::r()) to
+    # prevent globalenv from leeking into knit files
+    .knit_parametrized %>%
+        callr::r(args = list(...), show = TRUE)
+}
+
+my_render_sweave <- function(
+    source_path,
+    output_path,
+    parameters = list(),
+    engine = "pdflatex",
+    keep_intermediate_file = FALSE
+) {
+    if (keep_intermediate_file)
+        intermediate_file <- path_ext_set(source_path, "tex")
+    else
+        intermediate_file <- file_temp(ext = "tex")
+
+    source_path %>%
+        knit_parametrized(parameters = parameters, output = intermediate_file) %>%
+        tinytex::latexmk(pdf_file = output_path, engine = engine)
+}

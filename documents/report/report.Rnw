@@ -1,0 +1,262 @@
+% Document class ---------------------------------------------------------------
+\documentclass[a4paper, 12pt]{article}
+
+% R header ---------------------------------------------------------------------
+<<setup, include = FALSE>>=
+knitr::opts_chunk$set(
+    echo = FALSE,
+    fig.align = "center",
+    fig.path = tempdir(),
+    fig.width = 10,
+    fig.height = 6,
+    fig.pos = "ht",
+    out.width = "100%",
+    warning = FALSE
+)
+
+# Makes sure the report working directory is the same as the project working directory
+knitr::opts_knit$set(
+    root.dir = rprojroot::find_rstudio_root_file()
+)
+@
+
+<<packages, include = FALSE>>=
+source("R/packages.R")
+@
+
+<<functions, include = FALSE>>=
+my_kable <- function(
+    data,
+    ...
+) {
+    data %>%
+        knitr::kable(digits = 3, linesep = "", booktabs = TRUE, ...)
+}
+@
+
+% Preamble ---------------------------------------------------------------------
+\input{\Sexpr{preamble_path}}
+
+\begin{document}
+    % Tittle page --------------------------------------------------------------
+    \input{\Sexpr{title_page_path}}
+
+    % Body ---------------------------------------------------------------------
+    \newpage
+    \section{Introdução} \label{sec:introdução}
+        Atualmente, o mundo está passando por uma pandemia, causada por uma nova variação do SARS denominada SARS-CoV-2, popularmente conhecida como Corona. Essa pandemia tem afetado severamente a saúde pública e a economia global. A sua solução tem se demonstrado complicada e a importância da pesquisa cada vez mais evidente. Exemplos disso são estudos do perfil do vírus, desenvolvimentos de equipamentos médicos para tratamento e elaboração de uma vacina.
+
+        Apesar de não ser novo, o Oropouche (OROV) é um vírus pouco conhecido, que pode trazer riscos para a população brasileira. A febre oropouche possui sintomas parecidos com o da dengue e incluem febre, dores na cabeça e articulações, náuseas e calafrios. Além disso, ela também pode ser transmitida por picadas de mosquito. Infelizmente, há poucos detalhes esclarecidos sobre essa doença.
+
+        Esse relatório detalha a análise estatística feita para o pesquisador Daniel Teixeira (Instituto de Biologia - Unicamp), desenvolvida pelos alunos das disciplinas Consultoria Estatística I (ME712) e Consultoria Estatística II (ME812) (Departamento de Estatística do Instituto de Matemática, Estatística e Computação Científica - Unicamp): Aline Pelegrino Shikasho, Beatriz Heloise Messias e Giuseppe Tinti Tomio. Em especial, é estudada a saúde de ratos infectados por Oropouche, com ênfase nos genes RAG1 e RAG2.
+
+        Esse relatório se divide em 7 seções, contando com a introdução. A Seção \ref{sec:objetivos} expõe os objetivos do pesquisador, enquanto a Seção \ref{sec:experimento e banco de dados} explica como foi realizado o experimento e a organização do banco de dados. Já a Seção \ref{sec:análise exploratória} apresenta análise exploratória realizada, ao passo que a Seção \ref{sec:metodologia} explica a metodologia desenvolvida para análise estatística. Por fim, a Seção \ref{sec:resultados} comenta os resultados obtidos e a Seção \ref{sec:conclusão} conclui o estudo.
+
+    \section{Objetivos} \label{sec:objetivos}
+        O pesquisador possui dois objetivos referentes a análise estatística. O primeiro é estudar o impacto da supressão dos genes RAG1 e RAG2 na saúde de ratos infectados com Oropouche. O segundo objetivo é identificar o tempo necessário para que a diferença entre os tratamentos se torne detectável. O trabalho apresentado nesse relatório busca atender a esses pedidos de forma estatística.
+
+    \section{Experimento e banco de dados} \label{sec:experimento e banco de dados}
+        O experimento realizado consistiu em infectar 19 ratos no mesmo dia com Oropouche e medir diariamente o peso de cada um deles durante um período de 21 dias. Os ratos foram divididos em 3 grupos para administração do tratamento: 4 em ``selvagem'', 9 em ``RAG1`` e 6 em ``RAG2''. Selvagem é o grupo controle, enquanto que RAG1 e RAG2 são ratos geneticamente modificados para desativar os respectivos genes. É importante realçar que todos os ratos tinham idades próximas a 3 meses no momento da infecção.
+
+        Os dados fornecidos foram organizados em um banco de dados com a seguinte estrutura:
+
+        \begin{itemize}
+            \item \textbf{Dia:} dias após a infecção.
+            \item \textbf{Tratamento:} grupo de tratamento do rato, podendo ser: ``selvagem'' (controle), ``RAG1'' (supressão do gene RAG1) ou ``RAG2'' (supressão do gene RAG2).
+            \item \textbf{Rato:} código de identificação do rato no estudo.
+            \item \textbf{Estado de vida:} estado de vida do rato no dia em questão, podendo ser: ``morto'' ou ``vivo''.
+            \item \textbf{Peso:} proporção do peso do rato no dia em questão em relação ao dia 0 (dia da infecção). Caso o rato estivesse morto no momento da pesagem, o seu peso é anotado como ``NA''.
+        \end{itemize}
+
+    \section{Análise exploratória} \label{sec:análise exploratória}
+        O peso dos ratos é a medida central do experimento realizado, por isso foi alvo de análises iniciais. A Figura \ref{fig:weights_plot} mostra os pesos de cada rato durante o período do estudo, separados por tratamento. É possível ver que o grupo selvagem possui uma tendência de aumentar seu peso com o tempo, enquanto que os mutantes tendem a manter ou perder. Essa diferença de comportamento é evidenciada visualmente bem cedo.
+
+<<weights_plot, fig.cap = "Pesos dos ratos durante o período do experimento, separados por tratamento.">>=
+readd(weights_plot)
+@
+
+        A Figura \ref{fig:weights_plot} também revela a morte prematura dos mutantes, como pode ser visto nas trajetórias terminadas antes do dia 21. Tendo isso em mente, o estado de vida dos ratos também foi investigado. A Figura \ref{fig:life_status_plot} mostra as porcentagens de ratos vivos e mortos durante o período do experimento, separadas por tratamento. Através dela é possível notar como os mutantes começam a morrer a partir do dia 7 e no dia 15 estão todos mortos. Em contrapartida, todos os selvagens estavam vivos no final do estudo.
+
+<<life_status_plot, fig.cap = "Porcentagens de ratos vivos e mortos por dia durante o período do experimento, separadas por tratamento">>=
+readd(life_status_plot)
+@
+
+    \section{Metodologia} \label{sec:metodologia}
+        A metodologia desenvolvida é baseada em um estudo similar \citep{proenca2016interferon} e é dividida em 3 partes. A Subseção \ref{ssec:metodologia:modelo linear misto} comenta sobre o modelo linear misto usado para estudar o impacto da supressão dos genes RAG1 e RAG2 no peso dos ratos. Já a Subseção \ref{ssec:metodologia:ANOVAs simultâneas} apresenta as ANOVAs simultâneas usadas para identificar diferenças entre os pares de tratamento em cada dia. Por fim, a Subseção \ref{ssec:metodologia:análise de sobrevivência} mostra uma abordagem alternativa ao modelo linear misto, baseada na análise de sobrevivência dos ratos.
+
+        \subsection{Modelo linear misto} \label{ssec:metodologia:modelo linear misto}
+            Para estudar o impacto da supressão dos genes RAG1 e RAG2 na saúde dos ratos infectados, foi escolhido modelar os pesos dos ratos através de um modelo linear misto. Os modelos lineares mistos possuem diversas vantagens: eles são métodos comuns na bioestatística (e.g., ANOVA mista), interpretáveis  e adequados para uma situação com poucos dados (i.e., 19 ratos divididos em 3 tratamentos e avaliados por 21 dias).
+
+            Antes de descrever o modelo linear misto desenvolvido, é interessante detalhar o processo de desenvolvimento dele. Dessa forma, o texto se torna mais acessível ao leitor com menos contexto. Para tanto, é interessante começar com um problema simplificado. Se ao invés de 21 medidas coletadas por rato, houvesse apenas 1. No caso, o peso do rato um dia antes dele morrer ou acabar o estudo. Um modelo natural nesse caso seria:
+
+            \begin{equation} \label{eq:modelo linear de uma medida}
+                \begin{gathered}
+y_i = \beta_0 + \beta_1 x_{i, 1} + \beta_2 x_{i, 2} + \epsilon_i , \\
+\{ \epsilon_i \} \iid \Normal(0, \sigma_\epsilon^2 ) ,
+                \end{gathered}
+            \end{equation}
+
+            \noindent
+            onde $y_i$ é o peso do rato $i$ um dia antes dele morrer ou acabar o estudo; $x_{i, 1}$ é 1 se o rato $i$ pertence ao tratamento RAG1 e 0 caso contrário; $x_{i, 2}$ é 1 se o rato $i$ pertence ao tratamento RAG2 e 0 caso contrário. Por fim, $\beta_0$, $\beta_1$, $\beta_2$ e $\sigma_\epsilon^2$ são parâmetros. O modelo da Equação \ref{eq:modelo linear de uma medida} é basicamente uma ANOVA.
+
+            Ainda num escopo reduzido, se ao invés de apenas 19 ratos, houvessem $19 \times 21 = 399$ ratos. Além disso, para cada dia $t \in \{1, \ldots 21\}$ fosse anotado o peso de 19 ratos, de forma que os ratos não se repitam ao longo dos dias, a proporção entre os grupos de tratamento se mantenha e sempre houvessem cobaias disponíveis (i.e., não morressem durante o experimento). Para este cenário, uma sugestão de modelo seria:
+
+            \begin{equation} \label{eq:modelo linear de uma medida por dia}
+                \begin{gathered}
+                    \begin{aligned}
+y_{i \times t}
+&=
+(\beta_0 + \beta_1 x_{i \times t, 1} + \beta_2 x_{i \times t, 2}) \\
+&+
+(\beta_3 + \beta_4 x_{i \times t, 1} + \beta_5 x_{i \times t, 2}) t \\
+&+
+\epsilon_{i \times t} ,
+                    \end{aligned} \\
+\{ \epsilon_{i \times t} \} \iid \Normal(0, \sigma_\epsilon^2 ) ,
+                \end{gathered}
+            \end{equation}
+
+            \noindent
+            sendo $y_{i \times t}$ o peso do rato $i \times t$ ($i$-ésimo rato medido no dia $t$); $x_{i \times t, 1}$ é 1 se o rato $i \times t$ pertence ao tratamento RAG1 e 0 caso contrário; $x_{i \times t, 2}$ é 1 se o rato $i \times t$ pertence ao tratamento RAG2 e 0 caso contrário. Por fim, $\beta_0$, $\beta_1$, $\beta_2$, $\beta_3$, $\beta_4$, $\beta_5$ e $\sigma_\epsilon^2$ são parâmetros. O modelo da Equação \ref{eq:modelo linear de uma medida por dia} é basicamente uma regressão linear sobre os tratamentos e o tempo com interação entre eles. Em outras palavras, cada tratamento possui seus próprios coeficientes linear e angular.
+
+            Nos dados originais do estudo, conta-se com 19 ratos cujos pesos foram medidos durante 21 dias a partir da infecção (dia 0)\footnote{Conta-se com a proporção do peso em relação ao peso inicial no estudo para cada dia.}. Além disso, como alguns dos ratos morreram ao longo do experimento, há apenas 256 observações. Portanto, o modelo enfim desenvolvido foi:
+
+            \begin{equation} \label{eq:modelo linear misto}
+                \begin{gathered}
+                    \begin{aligned}
+y_{i, t}
+&=
+(\beta_0 + \beta_1 x_{i, t, 1} + \beta_2 x_{i, t, 2} + u_{i, 1}) \\
+&+
+(\beta_3 + \beta_4 x_{i, t, 1} + \beta_5 x_{i, t, 2} + u_{i, 2}) t \\
+&+
+\epsilon_{i, t} ,
+                    \end{aligned} \\
+\{ \bm{\epsilon}_{i} = (\epsilon_{i, t}, \dots, \epsilon_{i, T(i)} ) \} \iid \Normal(\bm{0}, \bm{\Sigma}_\epsilon^\text{AR(1)} ) , \\
+\{ \bm{u}_{i} = (u_{i, 1}, u_{i, 2} ) \} \iid \Normal(\bm{0}, \bm{\Sigma}_u ) , \\
+\{ \bm{\epsilon}_{i} \} \independent \{ \bm{u}_{i} \} ,
+                \end{gathered}
+            \end{equation}
+
+            \noindent
+            com $y_{i, t}$ é o peso do rato $i$ no dia $t$; $x_{i, t, 1} = x_{i, 1}$ é 1 se o rato $i$ pertence ao tratamento RAG1 e 0 caso contrário; $x_{i, t, 2} = x_{i, 2}$ é 1 se o rato $i$ pertence ao tratamento RAG2 e 0 caso contrário; $T(i)$ é o último dia com peso disponível para o rato $i$. Por fim, $\beta_0$, $\beta_1$, $\beta_2$, $\beta_3$, $\beta_4$, $\beta_5$, $\bm{\Sigma}_\epsilon^\text{AR(1)}$ e $\bm{\Sigma}_u$ são parâmetros, com o supraescrito AR(1) simbolizando uma estrutura de correlação AR(1). A principal diferença do modelo da Equação \ref{eq:modelo linear misto} para o da equação \ref{eq:modelo linear de uma medida por dia} está em incluir a correlação na medidas de um mesmo rato através do efeito aleatório $\bm{u}_i$. Dessa forma, os coeficientes linear e angular são aleatórios. Por fim, também foi inserida uma estrutura de correlação AR(1) nos erros $\bm{\epsilon}_i$ do modelo para levar em conta a autocorrelação das medidas, decorrentes do seu aspecto temporal. É possível notar que o modelo possui uma estrutura que considera as nuances do experimento ao mesmo tempo que o faz com apenas 11 quantidades a serem estimadas.
+
+        \subsection{ANOVAs simultâneas} \label{ssec:metodologia:ANOVAs simultâneas}
+            Para identificar diferenças entre os pares de tratamento em cada dia, foi escolhido modelar os pesos dos ratos através de ANOVAs simultâneas. Mais precisamente, para cada dia $t \in \{ 1, \ldots, T^\star \}$ os pesos dos ratos são modelados através da ANOVA, sendo $T^\star$ o último dia em que todos os 3 tratamentos possuem representantes. A falta de uma estrutura de dependência entre as ANOVAs é compensada pela
+            correção de inflação nos p-valores apresentados na Seção \ref{sec:resultados}.
+
+            Matematicamente, as ANOVAs simultâneas são:
+
+            \begin{equation} \label{eq:ANOVAs simultâneas}
+                \begin{gathered}
+y_{i, t} = \beta_{0, t} + \beta_{1, t} x_{i, 1} + \beta_{2, t} x_{i, 2} + \epsilon_{i, t} , \\
+\{ \epsilon_{i, t} \}_i \iid \Normal(0, \sigma_{\epsilon, t}^2 ) \text{ para cada } t
+                \end{gathered}
+            \end{equation}
+
+            \noindent
+            onde $y_{i, t}$ é o peso do rato $i$ no dia $t$; $x_{i, 1}$ é 1 se o rato $i$ pertence ao tratamento RAG1 e 0 caso contrário; $x_{i, 2}$ é 1 se o rato $i$ pertence ao tratamento RAG2 e 0 caso contrário. Por fim, $\beta_{0, t}$, $\beta_{1, t}$, $\beta_{2, t}$ e $\sigma_{\epsilon, t}^2$ para $t \in \{ 1, \ldots, T^\star \}$ são parâmetros.
+
+        \subsection{Análise de sobrevivência} \label{ssec:metodologia:análise de sobrevivência}
+            Para complementar os métodos das subseções \ref{ssec:metodologia:modelo linear misto} e \ref{ssec:metodologia:ANOVAs simultâneas}, baseados nos pesos dos ratos, foi considerada uma abordagem alternativa. Nela, os tratamentos são comparados com base no tempo decorrido até a morte dos ratos, o que na literatura é conhecida por análise de sobrevivência. Mais precisamente, foi aplicado o teste log rank \cite{harrington1982class}, que é um teste não paramétrico que avalia se as funções de risco (taxas de morte) dos tratamentos são diferentes.
+
+    \section{Resultados} \label{sec:resultados}
+        Tal como a Seção \ref{sec:metodologia}, os resultados são divididos em 3 partes. A Subseção \ref{ssec:resultados:modelo linear misto} apresenta os resultados obtidos do modelo linear misto. Já a Subseção \ref{ssec:resultados:ANOVAs simultâneas} refere-se às ANOVAs simultâneas. Por fim a subseção \ref{ssec:resultados:análise de sobrevivência} corresponde à análise de sobrevivência.
+
+        Sempre é assumido um nível de significância de cinco por cento ($\alpha = 5\%$). Além disso, dentro de cada tabela apresentada, é aplicado o método de Holm para correção de inflação de p-valores. Por fim, todos os números maiores que 1 foram aproximados para duas casas decimais e todos os menores ou iguais a 1 para quatro casas decimais. Portanto, alguns valores são retratados como zero.
+
+        Para manipulação dos dados, modelagem e realização dos testes estatísticos foi usada a linguagem de programação \texttt{R} \citep{R-language} com os pacotes \texttt{nlme} (modelo linear misto) \cite{nlme-package}, \texttt{stats} (ANOVAs simultâneas) \cite{R-language} e \texttt{survival} (teste log rank) \cite{survival-package}.
+
+        \subsection{Modelo linear misto} \label{ssec:resultados:modelo linear misto}
+            A Figura \ref{fig:mixed_linear_model_fit_plot} apresenta os pesos dos ratos durante o período do experimento, ajustados pelo modelo linear misto e separados por tratamento. É possível observar que o modelo sugere uma tendência de aumento de peso para o grupo selvagem, contrastando com os grupos com supressão de gene, que exibem uma tendência de perda. Além disso, o grupo RAG2 aparenta possuir uma propensão maior a perda de peso.
+
+<<mixed_linear_model_fit_plot, fig.cap = "Pesos dos ratos durante o período do experimento, ajustados pelo modelo linear misto, separados por tratamento.">>=
+readd(mixed_linear_model_fit_plot)
+@
+
+            A Tabela \ref{tab:fixed_effect_parameters_table} apresenta a estimativa e informações adicionais dos parâmetros dos efeitos fixos. Como pode ser visto, os coeficientes angulares são todos estatisticamente significantes e reforçam os comportamentos dos pesos já discutidos.
+
+<<fixed_effect_parameters_table>>=
+readd(fixed_effect_parameters_table) %>%
+    my_kable(caption = "Estimativa e informações adicionais dos parâmetros dos efeitos fixos.")
+@
+
+            Adicionalmente, a tabela \ref{tab:variability_parameters_table} expõe a estimativa dos parâmetros dos efeitos aleatórios e erros. A adição dos efeitos aleatórios não contribuiu muito para a explicação da variação. Dito isto, a estimativa da autocorrelação dos erros é bem alta, o que sugere ser uma boa escolha adicionar uma estrutura de correlação aos erros.
+
+<<variability_parameters_table>>=
+readd(variability_parameters_table) %>%
+    my_kable(caption = "Estimativa dos parâmetros dos efeitos aleatórios e erros.")
+@
+
+            O comportamento evidenciado pelo modelo pode demonstrar que há uma contribuição dos genes RAG1 e RAG2 na imunidade ao vírus Oropouche.  Ainda, a rápida perda de peso do grupo com o gene RAG2 suprimido pode indicar que há uma maior contribuição desse gene à imunidade ao vírus.
+
+        \subsubsection{Diagnóstico de modelo}
+            Foi realizada uma análise de resíduos para diagnosticar a qualidade do modelo linear misto ajustado. Na Figura \ref{fig:mixed_linear_model_residuals}, observa-se os resíduos normalizados em função dos valores ajustados. Não foi possível notar grandes tendências, a não ser um aumento na variância conforme os valores ajustados se afastam de 1.
+
+<<mixed_linear_model_residuals, fig.cap = "Resíduos normalizados em função dos valores ajustados do modelo linear misto.">>=
+readd(mixed_linear_model_residuals)
+@
+
+        \subsection{ANOVAs simultâneas} \label{ssec:resultados:ANOVAs simultâneas}
+            A Figura \ref{fig:simultaneous_anovas_fit_plot} permite visualizar a análise conduzida pelas ANOVAs simultâneas. Nela, são apresentadas as estimativas e seus intervalos de confiança (sem correção) por dia, separadas por tratamento. O grupo selvagem exibe um comportamento visualmente discordante do resto. Enquanto que os mutantes começam a se diferenciar apenas ao final do período.
+
+<<simultaneous_anovas_fit_plot, fig.cap = "Estimavas das ANOVAs simultâneas e seus intervalos de confiança (sem correção) por dia, separadas por tratamento.">>=
+readd(simultaneous_anovas_fit_plot)
+@
+
+            A Tabela \ref{tab:F_tests_table} resume as tabelas ANOVA dos modelos simultâneos. Todos os dias são estatisticamente significativos segundo o nível de significância adotado. Assim, segue-se com uma análise post hoc.
+
+<<F_tests_table>>=
+readd(F_tests_table) %>%
+    my_kable(caption = "Resumo das tabelas ANOVA dos modelos simultâneos.")
+@
+
+            A Tabela \ref{tab:pairwise_t_tests_table} apresenta os p-valores das comparações par a par feitas por testes t. Os grupos RAG1 e RAG2 apresentam uma diferença significativa em relação ao grupo selvagem em todos os dias. Entretanto, só é apresentado uma diferença significativa  entre eles a partir do dia 11, segundo o nível de significância adotado e a  correção de inflação de p-valores aplicada.
+
+<<pairwise_t_tests_table>>=
+readd(pairwise_t_tests_table) %>%
+    my_kable(caption = "p-valores das comparações par a par feitas por testes t.")
+@
+
+        \subsubsection{Diagnóstico de modelo}
+            Para a realização das ANOVAs, foram testadas as suposições de normalidade através de testes de Shapiro-Wilk e as suposições de homoscedasticidade  através de um teste de Lavene. Ambos os testes apresentaram resultados concordantes com as suposições.
+
+        \subsection{Análise de sobrevivência} \label{ssec:resultados:análise de sobrevivência}
+            A Figura \ref{fig:survival_curves_plot} permite visualizar as curvas de sobrevivência calculadas pelo método Kaplan-Meier. Nela, são apresentadas as porcentagens de ratos vivos por dia, separadas por tratamento. Visualmente, o grupo Selvagem apresenta um comportamento diferente dos outros, enquanto que os grupos mutantes apresentam comportamentos semelhantes entre si.
+
+<<survival_curves_plot, fig.cap = "Porcentagem de sobrevivência dos ratos por dia, separada por tratamento.">>=
+readd(survival_curves_plot)
+@
+
+            Na Tabela \ref{tab:log_rank_table}, encontra-se o resultado do teste log rank para comparação das curvas. Como ele é significativo, segue-se com uma análise post hoc.
+
+<<log_rank_table>>=
+readd(log_rank_table) %>%
+    my_kable(caption = "Teste log rank.")
+@
+
+            A Tabela \ref{tab:pairwise_log_rank_tests_table} apresenta os p-valores dos testes log rank feitos par a par. Como pode ser observado, as curvas dos tratamentos RAG1 e RAG2 são diferentes da curva do tratamento selvagem, porém não apresentam diferença entre si no nível de confiança adotado.
+
+<<pairwise_log_rank_tests_table>>=
+readd(pairwise_log_rank_tests_table) %>%
+    my_kable(caption = "Teste log rank por pares.")
+@
+
+    \section{Conclusão} \label{sec:conclusão}
+        Este relatório descreve as análises estatísticas feitas a partir dos dados fornecidos pelo pesquisador Daniel Teixeira. Em seu experimento, o pesquisador buscou estudar o impacto da supressão dos genes RAG1 e RAG2 na imunidade de ratos infectados pelo vírus Oropouche. O peso dos indivíduos foi utilizado como um indicador de suas condições de saúde.
+
+        O relatório fornece análises dos pesos dos indivíduos ao longo do experimento a partir de duas abordagens: uma baseada em um modelo linear misto e outra em ANOVAs simultâneas. Foi também apresentada uma comparação dos grupos de tratamento através de um método de análise de sobrevivência. A rigor científico, foi providenciada ao pesquisador a fundamentação matemática de todos os modelos propostos.
+
+        Nas análises realizadas, foi possível observar características estatisticamente significativas entre os grupos de tratamento. Desde o primeiro dia do experimento, o grupo selvagem já apresenta diferença em seu peso em relação aos outros indivíduos. Em contraste, os grupos com supressão de gene só passaram a apresentar diferenças de peso entre si a partir do décimo primeiro dia do estudo. As curvas de peso observadas também são discrepantes: os indivíduos selvagens apresentaram aumento de peso enquanto que os indivíduos mutantes apresentaram queda. Ao considerar o peso como um indicador da condição de saúde dos animais, pode-se concluir que a supressão dos genes RAG1 e RAG2 contribuem para a diminuição da imunidade ao vírus.
+
+        Os indivíduos do grupo RAG2 apresentaram uma perda de peso mais rápida, o que poderia indicar que o gene RAG2 exerce maior contribuição no processo imunológico. No entanto, a partir da análise do tempo de sobrevivência dos indivíduos, não foi possível concluir que algum dos genes possua mais influência na sobrevivência do grupo do que o outro.
+
+        É importante salientar que, como as análises foram planejadas de maneira póstuma a coleta dos dados, os modelos devem ser questionados quanto à possibilidade de existência de vieses. Dessa forma, conclusões devem ser tomadas apenas como indícios de causalidade e não como afirmações factuais.
+
+    % Bibliography -----------------------------------------------------------------
+    \newpage                                 % Makes sure bibliography is in a different page
+    \clearpage                               % Makes sure there are no floats after bibliography
+    %\nocite{*}                              % Uncomment if there are references without \cite{}
+    \bibliographystyle{apalike}              % Bibliography style
+    \bibliography{\Sexpr{bibliography_path}} % Bibliography file
+\end{document}

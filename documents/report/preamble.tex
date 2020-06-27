@@ -1,0 +1,86 @@
+% Document type ----------------------------------------------------------------
+% This need to be in .Rnw in order to knitr to corretly parse
+%\documentclass{article}
+
+% Load packages ----------------------------------------------------------------
+%% Language (uncomment your language)
+%\usepackage[USenglish]{babel} % US English
+\usepackage[brazilian]{babel} % Brazilian Portuguese
+
+%% Encoding
+\usepackage[T1]{fontenc}    % Font (output) encoding
+\usepackage[utf8]{inputenc} % Input encoding
+
+%% Math
+\usepackage{amsmath}   % Default
+\usepackage{amsfonts}  % Default
+\usepackage{amssymb}   % Default
+\usepackage{amsthm}    % Default
+\usepackage{mathtools} % Default
+\usepackage{bm}        % Math symbols with bold font: \bm{symbol}
+\usepackage{optidef}   % Optimization problens: \begin{mini}, \begin{argmaxi}, etc
+
+%% Floats
+\usepackage{subcaption} % Side by side figures: \begin{subfigure}
+\usepackage{multirow}   % Multi row table cell: \multirow{lines count}{*}{text}
+\usepackage{makecell}   % Break line (\\) inside a table cell: \makecell{text \\ text}
+
+%% Bibliography
+\usepackage[square,numbers]{natbib}
+
+%% Extra
+\usepackage{booktabs}          % Beautiful tables
+\usepackage{hyperref}          % URL links: \href{URL}{text}
+\usepackage{color}             % Colored texts: \textcolor{cor}{text}
+\usepackage{pdfpages}          % Attach pdfs: \includepdf{file.pdf}
+\usepackage{xspace}            % Make a possible space: \xspace
+\usepackage[export]{adjustbox} % Center big figures: \includegraphics[width=1.2\linewidth,center]{fig.png}
+
+% Customization ----------------------------------------------------------------
+%% Number equations/figures/tables by section
+\usepackage{chngcntr}
+\counterwithin{equation}{section}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+%% Fix caption above table
+\usepackage{float}
+\floatstyle{plaintop}
+\restylefloat{table}
+\usepackage[tableposition=top]{caption}
+
+%% Fix space between items in \begin{itemize}
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+%% Extra
+\usepackage{indentfirst}    % Indent first section paragraph
+%\linespread{1.5}           % Uncomment for 1.5 Line spacing
+%\usepackage[big]{layaureo} % Uncomment for smaller margins
+
+% Useful symbols ---------------------------------------------------------------
+%% Calculus
+\newcommand{\dv}[2]{\dfrac{d#1}{d#2}}                             % Derivative
+\newcommand{\dve}[3]{\dfrac{d#1}{d#2} \Bigr|_{#3}}                % Derivative evaluated at
+\newcommand{\pdv}[2]{\dfrac{\partial#1}{\partial#2}}              % Partial derivative
+\newcommand{\pdve}[3]{\dfrac{\partial#1}{\partial#2} \Bigr|_{#3}} % Partial derivative evaluated at
+
+%% Matrix algebra
+\DeclareMathOperator{\diag}{diag} % Diagonal of a matrix / diagonal matrix
+\DeclareMathOperator{\Tr}{Tr}     % Matrix trace
+
+%% Probability and Statistics
+\DeclareMathOperator{\Pb}{\mathbb{P}}                     % Probability measure
+\DeclareMathOperator{\E}{\mathbb{E}}                      % Expected value
+\DeclareMathOperator{\V}{\mathbb{V}}                      % Variance
+\DeclareMathOperator{\SD}{\text{SD}}                      % Standard Deviation
+\DeclareMathOperator{\Cov}{Cov}                           % Covariance
+\DeclareMathOperator{\Cor}{\rho}                          % Correlation
+\DeclareMathOperator{\independent}{\perp \!\!\! \perp \,} % Independence relation
+\DeclareMathOperator{\NullH}{\mathcal{H}_0}               % Null hypothesis
+\DeclareMathOperator{\AlterH}{\mathcal{H}_1}              % Alternative hypothesis
+\DeclareMathOperator{\iid}{\textit{ i.i.d. }}             % Independent and Identically Distributed
+\DeclareMathOperator{\Normal}{\mathcal{N}}                % Normal Distribution
+
+%% Extra
+\newcommand{\R}{\textbf{\textsf{R}} \xspace} % R programming language

@@ -79,4 +79,13 @@ plan <- drake_plan(
             bibliography_path = file_in(!!paths$report_bibliography)
         )
     ),
+
+    # Presentation
+    presentation = my_generate_presentation(
+        knitr_in(!!paths$presentation_source),
+        file_out(!!paths$presentation_output),
+        parameters = list(
+            preamble_path = file_in(!!paths$presentation_preamble)
+        )
+    ),
 )

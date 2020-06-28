@@ -1,0 +1,254 @@
+% Document class ---------------------------------------------------------------
+\documentclass{beamer}
+
+% Theme ------------------------------------------------------------------------
+\usetheme{metropolis}
+
+% R header ---------------------------------------------------------------------
+<<setup, include = FALSE>>=
+knitr::opts_chunk$set(
+    echo = FALSE,
+    fig.align = "center",
+    fig.path = tempdir(),
+    fig.width = 10,
+    fig.height = 6,
+    fig.pos = "ht",
+    out.width = "100%",
+    warning = FALSE
+)
+
+# Makes sure the report working directory is the same as the project working directory
+knitr::opts_knit$set(
+    root.dir = rprojroot::find_rstudio_root_file()
+)
+@
+
+<<packages, include = FALSE>>=
+source("R/packages.R")
+@
+
+<<functions, include = FALSE>>=
+my_kable <- function(
+    data,
+    ...
+) {
+    data %>%
+        knitr::kable(digits = 3, linesep = "", booktabs = TRUE, ...) %>%
+        kableExtra::kable_styling(position = "center")
+}
+@
+
+% Meta information -------------------------------------------------------------
+\title{Trabalho de Consultoria}
+\subtitle{Análise estatística da resposta imune adaptativa na neuroinvasão por Oropouche}
+\author{
+    Aline P. Shikasho
+    \and
+    Beatriz H. Messias
+    \and
+    Giuseppe T. Tomio
+    \vfill
+    {\tiny
+        Orientadora: Larissa A. Matos
+        \hfill
+        Pesquisador: Daniel T. Teixeira
+    }
+}
+\date{}
+
+% Preamble ---------------------------------------------------------------------
+\input{\Sexpr{preamble_path}}
+
+\begin{document}
+    \justifying
+
+    \frame{\titlepage}
+
+    \section{Introdução}
+        \begin{frame}{Vírus}
+            \begin{itemize}
+                \item \textbf{Vírus:} Oropouche
+                \item \textbf{Doença:} febre oropouche
+                \item \textbf{Sintomas:}
+                \begin{itemize}
+                    \item Febre
+                    \item Dores de cabeça
+                    \item Náuseas
+                    \item Calafrio
+                \end{itemize}
+                \item \textbf{Transmissão:} Picada de mosquito
+            \end{itemize}
+        \end{frame}
+
+    \section{Experimento e Dados}
+        \begin{frame}{Experimento e Dados}
+            \begin{itemize}
+                \item \textbf{Indivíduos:} 19 Ratos infectados com Oropouche
+                \item \textbf{Tratamentos:}
+                \begin{itemize}
+                    \item \textbf{Selvagem:} 4 Ratos controle
+                    \item \textbf{RAG1:} 9 Ratos com RAG1 suprimido
+                    \item \textbf{RAG2:} 6 Ratos com RAG2 suprimido
+                \end{itemize}
+                \item \textbf{Medida:} Peso diário
+                \item \textbf{Período:} 21 dias
+                \item \textbf{Cuidados:}
+                \begin{itemize}
+                    \item Infectados no mesmo dia
+                    \item Idades próximas a 3 meses
+                \end{itemize}
+                \item \textbf{Observações:} 256 observações (alguns ratos morreram)
+            \end{itemize}
+        \end{frame}
+
+    \section{Objetivos}
+        \begin{frame}{Objetivos}
+            \begin{itemize}
+                \item Estudar o impacto da supressão dos genes RAG1 e RAG2 na saúde dos ratos infectados por Oropouche
+                \item Identificar o tempo necessário para que a diferença entre os tratamentos se torne detectável
+            \end{itemize}
+        \end{frame}
+
+    \section{Análise Exploratória}
+        \begin{frame}{Peso}
+<<weights_plot>>=
+readd(weights_plot)
+@
+        \end{frame}
+
+        \begin{frame}{Mortalidade}
+<<life_status_plot>>=
+readd(life_status_plot)
+@
+        \end{frame}
+
+    \section{Metodologia}
+        \begin{frame}{Modelo Linear Misto}
+            \begin{equation*}
+                \begin{gathered}
+                    \begin{aligned}
+y_{i, t}
+&=
+(\beta_0 + \beta_1 x_{i, t, 1} + \beta_2 x_{i, t, 2} + u_{i, 1}) \\
+&+
+(\beta_3 + \beta_4 x_{i, t, 1} + \beta_5 x_{i, t, 2} + u_{i, 2}) t \\
+&+
+\epsilon_{i, t} ,
+                    \end{aligned} \\
+\{ \bm{\epsilon}_{i} = (\epsilon_{i, t}, \dots, \epsilon_{i, T(i)} ) \} \iid \Normal(\bm{0}, \bm{\Sigma}_\epsilon^\text{AR(1)} ) , \\
+\{ \bm{u}_{i} = (u_{i, 1}, u_{i, 2} ) \} \iid \Normal(\bm{0}, \bm{\Sigma}_u ) , \\
+\{ \bm{\epsilon}_{i} \} \independent \{ \bm{u}_{i} \}
+                \end{gathered}
+            \end{equation*}
+        \end{frame}
+
+        \begin{frame}{ANOVAS Simultâneas}
+            \begin{equation*}
+                \begin{gathered}
+y_{i, t} = \beta_{0, t} + \beta_{1, t} x_{i, 1} + \beta_{2, t} x_{i, 2} + \epsilon_{i, t} , \\
+\{ \epsilon_{i, t} \}_i \iid \Normal(0, \sigma_{\epsilon, t}^2 ) \text{ para cada } t
+                \end{gathered}
+            \end{equation*}
+        \end{frame}
+
+        \begin{frame}{Análise de Sobrevivência}
+            \begin{equation*}
+                \begin{gathered}
+S(t) = \Pb(T > t), \\
+\lambda(t)
+=
+\lim_{\Delta t \to 0} \frac{\Pb(t \leq T < t + \Delta t)}{\Delta t \cdot S(t)}
+=
+- \frac{S'(t)}{S(t)}
+                \end{gathered}
+            \end{equation*}
+        \end{frame}
+
+    \section{Resultados}
+        \begin{frame}{Modelo Linear Misto: Ajuste}
+<<mixed_linear_model_fit_plot>>=
+readd(mixed_linear_model_fit_plot)
+@
+        \end{frame}
+
+        \begin{frame}{Modelo Linear Misto: Efeitos Fixos}
+<<fixed_effect_parameters_table>>=
+readd(fixed_effect_parameters_table) %>%
+    select(`Parâmetro`, Estimativa, `p-valor`) %>%
+    my_kable()
+@
+        \end{frame}
+
+        \begin{frame}{Modelo Linear Misto: Efeitos Aleatórios}
+<<variability_parameters_table>>=
+readd(variability_parameters_table) %>%
+    my_kable()
+@
+        \end{frame}
+
+        \begin{frame}{Modelo Linear Misto: Diagnóstico}
+<<mixed_linear_model_residuals>>=
+readd(mixed_linear_model_residuals)
+@
+        \end{frame}
+
+        \begin{frame}{ANOVAs Simultâneas: Ajuste}
+<<simultaneous_anovas_fit_plot>>=
+readd(simultaneous_anovas_fit_plot)
+@
+        \end{frame}
+
+        \begin{frame}{ANOVAs Simultâneas: Testes F}
+<<F_tests_table>>=
+readd(F_tests_table) %>%
+    my_kable()
+@
+        \end{frame}
+
+        \begin{frame}{ANOVAs Simultâneas: Testes t Par a Par}
+            \begin{adjustwidth}{-2em}{-2em}
+<<pairwise_t_tests_table>>=
+readd(pairwise_t_tests_table) %>%
+    my_kable()
+@
+            \end{adjustwidth}
+        \end{frame}
+
+        \begin{frame}{Análise de Sobrevivência: Curvas de Kaplan-Meier}
+<<survival_curves_plot>>=
+readd(survival_curves_plot)
+@
+        \end{frame}
+
+        \begin{frame}{Análise de Sobrevivência: Teste Log Rank}
+<<log_rank_table>>=
+readd(log_rank_table) %>%
+    my_kable()
+@
+        \end{frame}
+
+        \begin{frame}{Análise de Sobrevivência: Testes Log Rank Par a Par}
+<<pairwise_log_rank_tests_table>>=
+readd(pairwise_log_rank_tests_table) %>%
+    my_kable()
+@
+        \end{frame}
+
+    \section{Conclusão}
+        \begin{frame}{Conclusão}
+            \begin{itemize}
+                \item \textbf{Conclusões:}
+                \begin{itemize}
+                    \item Mutantes apresentaram diferença entre si no peso, mas não na sobrevivência
+                    \item Ratos RAG1 e RAG2 suprimidos tiveram suas imunidades reduzidas
+                    \item Ratos RAG2 suprimidos foram afetados mais rápido
+                \end{itemize}
+                \item \textbf{Observações:}
+                \begin{itemize}
+                    \item Modelagem foi feita após a coleta de dados
+                    \item Possíveis vieses
+                    \item Poder de conclusão limitado
+                \end{itemize}
+            \end{itemize}
+        \end{frame}
+\end{document}

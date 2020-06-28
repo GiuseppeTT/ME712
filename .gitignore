@@ -7,3 +7,7 @@
 # data (non-public)
 data/*
 !data/.gitkeep
+
+# Extra (non-public files)
+extra/*
+!extra/.gitkeep

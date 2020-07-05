@@ -6,6 +6,7 @@ This repository comprehends the project developed by the students Aline Shikasho
 ## Data, report and presentation slides
 Currently, the data, report and presentation slides are not publicly available as they are part of an unpublished research.
 
+
 ## Dependencies
 If you can't run the analysis due to some missing R packages, consider running the following command on shell
 
@@ -24,3 +25,13 @@ make drake
 ```
 
 This will run all the necessary steps of the [drake](https://github.com/ropensci/drake) workflow (e.g., clean data, run models, generate report). 
+
+
+## Docker
+If you are familiar with [docker](https://www.docker.com/), you can run the project workflow inside a container by running the following command on shell
+
+```r
+make docker
+```
+
+Or simply download the docker image by `docker pull giuseppett/me712` and excecute the necessary commands. 
